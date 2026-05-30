@@ -1,0 +1,15 @@
+# 대용량 원본 데이터 - GitHub 용량 초과
+Data/EDA/
+Data/서울서베이 도시정책지표조사 정보/
+Data/서울시 사회복지시설 목록/
+Data/서울시 상권분석서비스/
+Data/통신정보 데이터/
+
+# 캐시 및 모델 파일
+**/*.pkl
+
+# 기타
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.env
