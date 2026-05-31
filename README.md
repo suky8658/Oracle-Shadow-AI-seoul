@@ -30,7 +30,13 @@
 
 서울 5060 남성 1인가구는 취업 상태에서도 단순노무 비중이 높아, 취업이 곧 안정으로 이어지지 않습니다. 이혼·사별, 고졸 이하, 취약 점유 등 비경제적 취약성도 동북·서남권 일부 자치구에 집중됩니다. 이 취약 등급은 생계급여 수급밀도와도 맞물려, 단순한 통계적 착시가 아님을 확인했습니다.
 
+![Labor vulnerability](Outputs/EDA/03_labor_scatter.png)
+
 ![District vulnerability](Outputs/EDA/03_district_grade.png)
+
+![Welfare validation](Outputs/EDA/03_grade_welfare.png)
+
+![Vulnerability axes](Outputs/EDA/03_axis_v4_forest.png)
 
 **확정 사실**: 서울 5060 남성 1인가구의 취약성은 특정 자치구에 집중됩니다.  
 **남는 질문**: 가장 편리한 도시 서울의 생활 인프라는 이들의 고립을 완화하는가, 아니면 보이지 않게 유지시키는가?
