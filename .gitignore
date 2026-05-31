@@ -1,0 +1,28 @@
+# Raw/source data is kept out of the public repository.
+Data/*
+!Data/seoul_dong.geojson
+!Data/seoul_dong_code.csv
+
+# Private/local documents
+문서/
+한국오라클 서류/
+.claude/
+Data.zip
+
+# Python/runtime
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+.env
+*.log
+
+# Intermediate caches
+Outputs/**/_*.pkl
+Outputs/**/*cache*.pkl
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/

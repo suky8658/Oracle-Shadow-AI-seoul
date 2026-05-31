@@ -1,0 +1,105 @@
+{
+  "feat_cols": [
+    "level_외출커뮤적은",
+    "level_이동횟수",
+    "level_배달식재료",
+    "level_독거비율",
+    "level_인프라",
+    "level_인구",
+    "delta_외출커뮤적은",
+    "delta_이동횟수",
+    "delta_배달식재료",
+    "delta_독거비율",
+    "infra_slope",
+    "infra_delta",
+    "infra_recent"
+  ],
+  "meta_cols": [
+    "행정동코드",
+    "자치구",
+    "행정동"
+  ],
+  "label_col": "label_entry",
+  "cv_metrics": {
+    "GradientBoosting": {
+      "auc": 0.8441,
+      "ap": 0.302,
+      "confusion_matrix": [
+        [
+          307,
+          14
+        ],
+        [
+          31,
+          7
+        ]
+      ]
+    },
+    "LogisticRegression": {
+      "auc": 0.8417,
+      "ap": 0.2714,
+      "confusion_matrix": [
+        [
+          255,
+          66
+        ],
+        [
+          8,
+          30
+        ]
+      ]
+    }
+  },
+  "feat_importance": {
+    "infra_recent": 0.19691338954717216,
+    "level_외출커뮤적은": 0.18073592508420736,
+    "level_독거비율": 0.1395635213874106,
+    "level_인프라": 0.11105756978187976,
+    "level_이동횟수": 0.07299635929917628,
+    "delta_외출커뮤적은": 0.06849177547335301,
+    "delta_이동횟수": 0.0660341294083651,
+    "level_인구": 0.04290941697016145,
+    "delta_배달식재료": 0.0369502529234037,
+    "level_배달식재료": 0.027061889041988252,
+    "infra_slope": 0.02304439399003015,
+    "infra_delta": 0.017801226316667255,
+    "delta_독거비율": 0.01644015077618484
+  },
+  "trained_at": "2026-05-30 23:57:58",
+  "n_train": 359,
+  "n_positive": 38,
+  "positive_rate": 0.1058,
+  "gb_params": {
+    "n_estimators": 100,
+    "max_depth": 3,
+    "learning_rate": 0.05,
+    "min_samples_leaf": 10,
+    "subsample": 0.8,
+    "random_state": 42
+  },
+  "lr_params": {
+    "C": 0.1,
+    "max_iter": 2000,
+    "class_weight": "balanced",
+    "random_state": 42
+  },
+  "threshold": 0.5,
+  "grade_bins": {
+    "저위험": [
+      0,
+      0.3
+    ],
+    "중위험": [
+      0.3,
+      0.5
+    ],
+    "고위험": [
+      0.5,
+      0.7
+    ],
+    "최고위험": [
+      0.7,
+      1.01
+    ]
+  }
+}
