@@ -12,8 +12,16 @@ Data/통신정보 데이터/
 **/*.png
 **/*.jpg
 
+# 이전 버전 폴더 (공유 제외)
+Oracle-Shadow-AI-seoul-main/
+
+# HTML 시안·문서 (대시보드는 streamlit, html 불필요)
+*.html
+docs/
+
 # 기타
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
 .env
+.claude/
