@@ -56,12 +56,19 @@ GU_MAP = {
     620: "관악구", 650: "서초구", 680: "강남구", 710: "송파구", 740: "강동구",
 }
 
-# 가중치
+# 가중치 (4변수 기본)
 W = {
     "A_도움부재":     0.30,
     "B_외로움부정":   0.30,
     "C_복지불신":     0.25,
     "D_네트워크축소": 0.15,
+}
+
+# 3변수 가중치 (D 제외 — PQ47 계열 중복 제거 검증용)
+W3 = {
+    "A_도움부재":   0.35,
+    "B_외로움부정": 0.35,
+    "C_복지불신":   0.30,
 }
 
 # 그룹 정의
@@ -426,6 +433,25 @@ def calculate_index(hh24, comm24):
     )
     gu_valid["Avoidance"] = (minmax_scale(gu_valid["index_raw"]) * 100).round(1)
 
+    # --- 3변수 버전 (D 제외) ---
+    gu_valid["index_raw_3var"] = sum(
+        gu_valid[f"{k}_s"] * w for k, w in W3.items()
+    )
+    gu_valid["Avoidance_3var"] = (minmax_scale(gu_valid["index_raw_3var"]) * 100).round(1)
+
+    # 4변수 vs 3변수 순위 비교
+    _rho3, _ = spearmanr(gu_valid["Avoidance"], gu_valid["Avoidance_3var"])
+    _top5_4 = set(gu_valid.nlargest(5, "Avoidance")["자치구"])
+    _top5_3 = set(gu_valid.nlargest(5, "Avoidance_3var")["자치구"])
+    _ov3 = len(_top5_4 & _top5_3)
+    print(f"\n  [3변수 버전 비교]")
+    print(f"    Spearman rho(4var vs 3var) = {_rho3:.4f}")
+    print(f"    Top5 일치: {_ov3}/5  4var={_top5_4}  3var={_top5_3}")
+    if _rho3 > 0.95:
+        print("    → D 포함 여부가 결론에 영향 없음 (rho > 0.95)")
+    else:
+        print("    → D 변수가 순위에 영향을 미침 (rho <= 0.95)")
+
     # 분포 출력
     av = gu_valid["Avoidance"]
     print(f"\n  Avoidance Index 분포:")
@@ -545,7 +571,7 @@ def validate_internal(gu_valid):
 def save_csv(gu_valid):
     """avoidance_index.csv 저장."""
     output = gu_valid[[
-        "자치구코드", "자치구", "Avoidance",
+        "자치구코드", "자치구", "Avoidance", "Avoidance_3var",
         "A_도움부재", "B_외로움부정", "C_복지불신", "D_네트워크축소",
         "n_가구주", "n_지역사회",
     ]].copy()
@@ -708,6 +734,19 @@ def save_validation(gu_valid, mw_df, kruskal_df, temporal_df, corr_df,
         for _, row in corr_df.iterrows()
     ) if len(corr_df) > 0 else "| - | - | - |"
 
+    # 3변수 버전 비교 변수 계산
+    _rho3v, _ = spearmanr(gu_valid["Avoidance"], gu_valid["Avoidance_3var"])
+    _t54 = set(gu_valid.nlargest(5, "Avoidance")["자치구"])
+    _t53 = set(gu_valid.nlargest(5, "Avoidance_3var")["자치구"])
+    _ov3v = len(_t54 & _t53)
+    _t54_str = ", ".join(sorted(_t54))
+    _t53_str = ", ".join(sorted(_t53))
+    _diff = _t54.symmetric_difference(_t53)
+    _diff_str = ", ".join(sorted(_diff)) if _diff else "없음 (완전 일치)"
+    _stab = ("D 포함 여부가 결론에 영향 없음 (rho > 0.95)"
+             if _rho3v > 0.95 else
+             "D 변수가 순위에 영향을 미침 (rho <= 0.95) — 해석 주의")
+
     # 분포 통계
     av = gu_valid["Avoidance"]
 
@@ -757,6 +796,21 @@ def save_validation(gu_valid, mw_df, kruskal_df, temporal_df, corr_df,
 {corr_lines}
 
 → |rho| < 0.7이면 각 구성요소가 서로 다른 차원을 측정하고 있음.
+
+## 3변수 버전 비교 (D 제외 — PQ47 계열 중복 제거)
+
+A(도움부재)와 D(네트워크축소)가 동일한 PQ47 계열에서 파생됨.
+D를 제외하고 A=0.35/B=0.35/C=0.30으로 재배분한 3변수 버전과 순위를 비교.
+
+| 항목 | 값 |
+|------|-----|
+| Spearman rho (4var vs 3var) | {{_rho3v:.4f}} |
+| Top5 일치 | {{_ov3v}}/5 |
+| 4변수 Top5 | {{_t54_str}} |
+| 3변수 Top5 | {{_t53_str}} |
+| 순위 차이 발생 자치구 | {{_diff_str}} |
+
+**결론**: {{_stab}}
 
 ## 분포 통계
 
