@@ -54,7 +54,7 @@ dep_dong = load_dep_dong()
 
 # ── 헤더 ──────────────────────────────────────────────────────────────
 st.markdown(
-    "<div class='hero'><h1>🗺️ SHADOW Map · 진단 맵</h1>"
+    "<div class='page-head'><h1>🗺️ SHADOW Map · 진단 맵</h1>"
     "<p>Dependency(편의 의존) × Avoidance(복지 회피) — 두 역설이 겹치는 자리에서 "
     "‘보이지 않는 고립’의 유형을 진단합니다.</p></div>",
     unsafe_allow_html=True,
