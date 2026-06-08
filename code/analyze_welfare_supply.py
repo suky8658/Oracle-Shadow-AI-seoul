@@ -97,8 +97,15 @@ def load_facilities():
 
 
 def load_indices():
-    """Avoidance + Shadow 인덱스 + 5060남성 실제 인구."""
+    """Avoidance + Shadow 인덱스 + 5060남성 실제 인구 + Avoidance 구성요소."""
     shadow = pd.read_csv(OUT / "shadow_index.csv")
+
+    # Avoidance 구성요소(A/B/C) merge — 노원구 등 연결 실패 진단에 사용
+    avo_comp = pd.read_csv(OUT / "복지의 역설" / "avoidance_index.csv")
+    shadow = shadow.merge(
+        avo_comp[["자치구", "A_도움부재", "B_외로움부정", "C_복지불신"]],
+        on="자치구", how="left"
+    )
 
     # 통신정보 패널에서 5060남성 실제 인구/1인가구 산출
     panel_cache = OUT / "편의의 역설" / "_full_panel_cache.pkl"
@@ -459,6 +466,27 @@ def save_report(corr_df, plus50_result, quad_df, merged):
         for _, row in top5.iterrows()
     )
 
+    # 노원구 구성요소 분해
+    nowon_rows = merged[merged["자치구"] == "노원구"]
+    if len(nowon_rows) > 0 and "A_도움부재" in merged.columns:
+        nr = nowon_rows.iloc[0]
+        _a = f"{nr['A_도움부재']:.3f}" if not __import__('math').isnan(nr["A_도움부재"]) else "N/A"
+        _b = f"{nr['B_외로움부정']:.2f}" if not __import__('math').isnan(nr["B_외로움부정"]) else "N/A"
+        _c = f"{nr['C_복지불신']:.2f}" if not __import__('math').isnan(nr["C_복지불신"]) else "N/A"
+        nowon_breakdown = (
+            f"| 구성요소 | 노원구 값 | 해석 |\n"
+            f"|---------|---------|------|\n"
+            f"| A. 도움부재율 | {_a} | 도움받을 사람 없다 비율 |\n"
+            f"| B. 외로움부정 (6-Q11A1) | {_b} | 높을수록 고립 부인 강함 |\n"
+            f"| C. 복지불신 (6-Q5A2) | {_c} | 높을수록 복지 불만족 |\n"
+            f"| Avoidance | {nr['Avoidance']:.1f} | 25개 자치구 중 1위 (100.0) |\n"
+            f"\n"
+            f"→ B(외로움부정)가 높아 '고립인데 스스로 인정하지 않음'이 핵심 원인.\n"
+            f"시설 공급을 늘려도 당사자가 고립을 인정하지 않으면 접근 동기가 차단됨."
+        )
+    else:
+        nowon_breakdown = "※ 구성요소 데이터 없음 — avoidance_index.csv 재실행 필요"
+
     p50_text = ""
     if plus50_result:
         p50_text = f"""
@@ -506,6 +534,13 @@ Q1/Q3 비율이 1보다 낮아 Q1의 시설 밀도는 Q3보다 다소 낮다.
 | 자치구 | Disconnect | 시설수 | Avoidance | 사분면 |
 |--------|-----------|--------|-----------|--------|
 {disc_lines}
+
+## 4-1. 노원구 Avoidance 구성요소 분해 (연결 실패 핵심 원인 진단)
+
+노원구는 Disconnect Score 1위(시설 많음 + Avoidance 최고)이다.
+구성요소를 분해하면 회피의 주된 원인이 단순한 시설 부족이 아님을 확인할 수 있다.
+
+{nowon_breakdown}
 
 ## 해석
 

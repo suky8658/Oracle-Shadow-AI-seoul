@@ -1,28 +1,27 @@
-# Raw/source data is kept out of the public repository.
-Data/*
-!Data/seoul_dong.geojson
-!Data/seoul_dong_code.csv
+# 대용량 원본 데이터 - GitHub 용량 초과
+Data/EDA/
+Data/서울서베이 도시정책지표조사 정보/
+Data/서울시 사회복지시설 목록/
+Data/서울시 상권분석서비스/
+Data/통신정보 데이터/
 
-# Private/local documents
-문서/
-한국오라클 서류/
-.claude/
-Data.zip
+# 캐시 및 모델 파일
+**/*.pkl
 
-# Python/runtime
+# 이미지 (대시보드에서 사용 안 함)
+**/*.png
+**/*.jpg
+
+# 이전 버전 폴더 (공유 제외)
+Oracle-Shadow-AI-seoul-main/
+
+# HTML 시안·문서 (대시보드는 streamlit, html 불필요)
+*.html
+docs/
+
+# 기타
 __pycache__/
-*.py[cod]
+*.pyc
 .ipynb_checkpoints/
-.venv/
-venv/
 .env
-*.log
-
-# Intermediate caches
-Outputs/**/_*.pkl
-Outputs/**/*cache*.pkl
-
-# OS/editor
-.DS_Store
-Thumbs.db
-.vscode/
+.claude/
