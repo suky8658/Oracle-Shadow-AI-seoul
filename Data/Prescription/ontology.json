@@ -1,0 +1,202 @@
+{
+  "_meta": {
+    "name": "고립위험 복지 온톨로지 (Isolation-Risk Welfare Ontology)",
+    "role": "제도특성 + Q프로필 → 한계(충돌) 도출 + 한계 → need → 이식후보 매칭 규칙·정의. recommends/target_type 미사용.",
+    "version": "2026-06-09d",
+    "id_convention": "ASCII id = 식별자(IRI), name = 한글 표시, def = 정의",
+    "conflict_inputs": [
+      "programs.json(제도 자극낙인·심화의존·접근방식·시행지)",
+      "ontology.json(Q 민감낙인·취약의존)"
+    ],
+    "note_no_recommends": "🚨 recommends/target_type 절대 미사용 — 충돌은 모든 (제도 × Q) 쌍에 대해 제도특성×Q프로필로만 계산",
+    "changelog": "2026-06-09b: 죽은 need 2종(자치구귀속·중복배제) 생성규칙 = structural_limits 추가 / 이식 매칭 = transplant_rule + access_modes 추가 / limit_to_needs에 from(생성규칙) 명시 / 2026-06-09c: 현행 판정 규칙 = coverage_rule 추가 (target_age·regions로 현행 인정 여부 결정, 빈틈 판정 기준) / 2026-06-09d: coverage_rule에 gender(여성전용 제외)·beneficiary(가족·주변인 제외) 조건 추가 — 대상이 5060 '남성' '당사자'이므로. programs.json에 gender·beneficiary 필드 신설 / [병합] ontology.json의 tagging_guide(rule1~9) + ontology(1)의 gender·beneficiary coverage_rule 통합 = 완전체"
+  },
+  "stigma_elements": [
+    {
+      "id": "STG_WelfareLabel",
+      "name": "복지라벨",
+      "def": "'복지' 라벨이 노출됨"
+    },
+    {
+      "id": "STG_FaceExposure",
+      "name": "대면노출",
+      "def": "본인 신상이 식별됨"
+    },
+    {
+      "id": "STG_SelfAction",
+      "name": "본인행동",
+      "def": "스스로 신청·방문해야 함"
+    },
+    {
+      "id": "STG_PublicExposure",
+      "name": "공개노출",
+      "def": "이웃에 알려질 위험"
+    },
+    {
+      "id": "STG_RecipientIdentity",
+      "name": "수혜정체성",
+      "def": "'도움받는 사람'으로 규정됨"
+    }
+  ],
+  "dependency_elements": [
+    {
+      "id": "DEP_NoContact",
+      "name": "비대면완결",
+      "def": "대면 없이 서비스가 끝남 (정서적 고립)",
+      "axis": "고립"
+    },
+    {
+      "id": "DEP_NoOuting",
+      "name": "외출불요",
+      "def": "집 밖에 나갈 동기를 안 줌 (물리적 고립)",
+      "axis": "고립"
+    },
+    {
+      "id": "DEP_NoRelation",
+      "name": "관계미형성",
+      "def": "일회성이라 관계망이 안 생김 (사회적 고립)",
+      "axis": "고립"
+    },
+    {
+      "id": "DEP_LowEfficacy",
+      "name": "자기효능감저하",
+      "def": "제도가 다 해줘 스스로 할 능력·의지를 잃음 (학습된 무력감)",
+      "axis": "의존본질"
+    },
+    {
+      "id": "DEP_FragileSupply",
+      "name": "중단취약",
+      "def": "상시 제공 전제로 살아 끊기면 바로 위기",
+      "axis": "의존본질"
+    }
+  ],
+  "access_modes": {
+    "_def": "제도의 접근 방식 — 중복배제 한계 판정용 (programs.json의 access_mode 값)",
+    "보편": {
+      "id": "ACC_Universal",
+      "def": "소득·중복수혜 조건 없이 누구나 (opt-out 포함)"
+    },
+    "선별": {
+      "id": "ACC_Selective",
+      "def": "소득·연령 등 자격 심사로 대상 한정 (한계 아님)"
+    },
+    "중복배제": {
+      "id": "ACC_Exclusive",
+      "def": "타 급여 수혜 시 배제 (중복수혜 금지) → 중복배제 한계 유발"
+    }
+  },
+  "quadrant_sensitive_stigma": {
+    "_def": "어느 Q가 어떤 낙인에 민감한가 (Q ─민감→ 낙인)",
+    "Q1": [
+      "STG_WelfareLabel",
+      "STG_FaceExposure",
+      "STG_SelfAction"
+    ],
+    "Q2": [],
+    "Q3": [
+      "STG_SelfAction"
+    ],
+    "Q4": [
+      "STG_FaceExposure",
+      "STG_PublicExposure",
+      "STG_RecipientIdentity"
+    ]
+  },
+  "quadrant_vulnerable_dependency": {
+    "_def": "어느 Q가 어떤 의존에 취약한가 (Q ─취약→ 의존)",
+    "_note": "Q2(고의존)는 신규 의존본질 2종(자기효능감저하·중단취약)에도 취약 — 사용자 확정 2026-06-09.",
+    "Q1": [
+      "DEP_NoContact",
+      "DEP_NoOuting",
+      "DEP_NoRelation",
+      "DEP_LowEfficacy",
+      "DEP_FragileSupply"
+    ],
+    "Q2": [
+      "DEP_NoOuting",
+      "DEP_NoRelation",
+      "DEP_LowEfficacy",
+      "DEP_FragileSupply"
+    ],
+    "Q3": [],
+    "Q4": []
+  },
+  "limit_to_needs": {
+    "_def": "도출된 한계 → 필요한 처방 방향(needs) 매핑. from = 그 한계를 만드는 규칙.",
+    "낙인충돌": {
+      "need_id": "NEED_NoStigma",
+      "name": "무낙인",
+      "def": "낙인 자극 없는 전달방식",
+      "from": "conflict_rules.stigma_conflict"
+    },
+    "의존심화": {
+      "need_id": "NEED_RelationRestore",
+      "name": "관계복원",
+      "def": "관계망·자립을 회복시키는 설계",
+      "from": "conflict_rules.dependency_conflict"
+    },
+    "자치구귀속": {
+      "need_id": "NEED_Transferable",
+      "name": "이식가능",
+      "def": "특정 자치구에 묶이지 않고 이식 가능",
+      "from": "structural_limits.자치구귀속"
+    },
+    "중복배제": {
+      "need_id": "NEED_UniversalAccess",
+      "name": "보편접근",
+      "def": "중복수혜 배제 없이 보편 접근",
+      "from": "structural_limits.중복배제"
+    }
+  },
+  "conflict_rules": {
+    "_def": "충돌(한계) 도출 규칙 — recommends 없음. 모든 (제도 × Q) 쌍에 적용.",
+    "stigma_conflict": "제도가 낙인 s를 자극(stimulates_stigma) AND Q가 s에 민감(quadrant_sensitive_stigma) → 낙인충돌(Q, 제도)",
+    "dependency_conflict": "제도가 의존 d를 심화(deepens_dependency) AND Q가 d에 취약(quadrant_vulnerable_dependency) → 의존충돌(Q, 제도)",
+    "double_conflict": "낙인충돌(Q,제도) AND 의존충돌(Q,제도) → 이중충돌(Q, 제도)"
+  },
+  "structural_limits": {
+    "_def": "제도 자체 속성에서 도출되는 한계 (Q 무관, 제도 단독). 제도×Q 충돌과 별개로 자치구귀속·중복배제 need를 생성.",
+    "자치구귀속": {
+      "condition": "regions가 '서울전체'가 아니고 특정 자치구에 한정됨",
+      "need_id": "NEED_Transferable"
+    },
+    "중복배제": {
+      "condition": "access_mode == '중복배제'",
+      "need_id": "NEED_UniversalAccess"
+    }
+  },
+  "coverage_rule": {
+    "_def": "선택 자치구의 대상(서울 5060 남성 1인가구)에게 '현행 제도'로 인정되는 조건. 빈틈(미충족) 판정의 기준.",
+    "is_current": "regions에 (선택 자치구 OR '서울전체') 포함 AND target_age에 ('중장년' OR '전연령') 포함 AND gender ∈ ('무관','남성') AND beneficiary == '당사자'",
+    "gender_values": {
+      "무관": "성별 제한 없음(남성 포함)",
+      "남성": "남성 전용",
+      "여성": "여성 전용(남성 대상엔 현행 아님)"
+    },
+    "beneficiary_values": {
+      "당사자": "고립위험 본인 대상",
+      "가족·주변인": "가족·지인 등 간접 대상(본인 대상 아님 → 현행 아님)"
+    },
+    "note": "네 조건 중 하나라도 불만족(예: 청년 전용·타자치구 전용·여성 전용·가족 대상) → 현행 아님 = 빈틈 유지. 단 현행이 아니어도 transplant_rule의 이식후보 자격은 별개로 유지(타지역·청년·여성·가족 제도도 설계가 맞으면 5060 남성용으로 이식 가능)."
+  },
+  "transplant_rule": {
+    "_def": "도출된 need → 이식후보 제도 매칭 규칙. 처방의 결말(외부 레퍼런스 이식).",
+    "rule": "도출된 need n 각각에 대해: fulfills_needs에 n을 포함 AND 선택 Q에 무충돌(낙인충돌=∅ AND 의존충돌=∅) AND 선택 자치구에서 미시행(regions에 선택 자치구 없음) → 이식후보(n, 제도)",
+    "reference_priority": "regions 기준 해외 > 국내타지역 > 서울 타자치구 순으로 레퍼런스 강도 표기 (선택 자치구 기준 상대값 — 저장하지 않고 런타임 계산)"
+  },
+  "tagging_guide": {
+    "_def": "programs.json enrich 시 코드 부여 규칙(단일 원천). gold_examples.json이 이 규칙의 실제 예시. 적극 태깅하되 content 근거+_audit 필수.",
+    "rule1_face_vs_noncontact": "대면(오프라인 집합·방문) 참여 필수 → STG_FaceExposure. 비대면 완결(온라인·전화·앱·IoT·화상) → DEP_NoContact + DEP_NoOuting. 둘은 거의 배타적(제도가 대면이냐 비대면이냐).",
+    "rule2_relationrestore": "NEED_RelationRestore는 둘 중 하나일 때만: (a) 사람 간 관계망·공동활동·소통이 명시적(소셜다이닝·모임·함께 만들기), OR (b) 의존을 줄이는 '이전가능 생활자립역량'(디지털·재무·주거·생활기술·취업/고용/직업역량 교육). 제외: 단순 체력·건강증진·개인취미·정서회복·자기돌봄·여가 → fulfills_needs 빈 값. ★요리·공예·만들기 강습은 '함께 나눠먹기·소통(관계망 a)'이 명시될 때만 부여; 단순 제작·습득(취미)이면 빈 값.",
+    "rule3_manual_vs_derived_needs": "수동 fulfills_needs 태깅은 NEED_NoStigma·NEED_RelationRestore 둘만. NEED_UniversalAccess(=access_mode가 보편)·NEED_Transferable(=regions가 서울전체)는 그래프가 access_mode/regions에서 자동 파생하므로 수동으로 적지 않는다. (자치구귀속·중복배제 한계를 regions/access에서 파생하는 것과 대칭)",
+    "rule4_access_mode": "보편=대상이면 누구나(선착순·추첨 포함). ★연령·지역 세그먼트만으로는 선별 아님(노인전용·청년전용·자치구 거주도 보편). 선별=자격·위기·상황을 심사하거나 '종합 고려 후 선정'(영케어러 자격·소득심사·위기점수·순위선정). 중복배제=타 급여/사업 수혜자 배제·중복수혜 금지 명시.",
+    "rule5_recipient_identity": "STG_RecipientIdentity는 프로그램이 특정 취약군(고독사위험·돌봄청년/영케어러·노부모부양·위기가구 등)을 자격/대상으로 명시·선별할 때만. 보편 프로그램의 help-seeking 망설임이나 '도움 필요한' 일반 표현은 제외.",
+    "rule6_dependency_kinds": "DEP_NoRelation=일회성 단발(1회 행사·단발 물품)이라 관계망 미형성. DEP_FragileSupply=반복·상시 공급 전제라 끊기면 즉시 위기(정기 배달·상시 IoT·정기 포인트). DEP_LowEfficacy=제도가 다 대행해 수동 수혜(가사대행·요리 대행 등). ★소득선별 일회성 현금/물품은 DEP 남발 금지(반복·상시일 때만 FragileSupply).",
+    "rule7_target_age_correction": "골격 target_age가 CSV 모집연령·제목과 어긋나면 CSV 근거로 보정(왜곡 아닌 정확화). coverage_rule상 중장년 또는 전연령 포함=현행 인정, 청년/노인 전용=현행 아님(빈틈). 보정이 곧 연령 빈틈 발견.",
+    "rule8_delivery_unknown_and_empty_content": "전달방식이 본문/명칭에 안 드러나면 ★대면으로 간주(서울 1인가구 센터 프로그램의 디폴트) → STG_FaceExposure. '온라인·비대면·화상·ZOOM·앱·전화·우편·배송' 등이 명시될 때만 비대면(DEP_NoContact·NoOuting). 본문이 비어있는 제도(원본 내용 없음, 약 173건)는 명칭·구분·모집대상·진행방식 컬럼으로 추론해 분류하고 _audit에 'content없음→명칭기반' 기록. 추론이 불가능할 만큼 단서가 없으면 해당 코드는 비우고 _audit에 사유를 남긴다(억지 부여 금지).",
+    "rule9_decision_log": "tagging_guide에 없는 애매한 케이스를 만나면: ① 네가 정한 판정 기준과 이유를 work/decisions_<담당>.md에 1줄로 기록(예: '온라인 접수만 있고 강의방식 불명 → 대면 간주(rule8)'), ② 그 기준을 네 배치 전체에 일관 적용(플립플롭 금지), ③ 최종 제출 시 이 로그를 함께 낸다. 4명 결과 병합 시 이 로그들을 비교해 규칙을 통일하고 tagging_guide에 흡수한다.",
+    "rare_or_absent_in_seoul": "서울 현행 데이터에 드물거나 없는 코드(클린 예시 없음, 정의 보고 해당 시에만): STG_PublicExposure(공개 명단·동네행사), DEP_NoRelation, DEP_LowEfficacy. NEED_NoStigma도 희소(=낙인 위주 서울 현행의 빈틈, 비대면·생활언어·보편일 때만). NEED_Transferable=0(서울전체 제도 없음=구조적 빈틈, 해외/타지역 이식후보가 채움). 이 쏠림은 버그가 아니라 진단 결과.",
+    "content_style": "2~3문장(약 100~200자). '무엇을·누구에게·어떻게(전달방식)' + 끝에 한계/성격을 박아 태그가 content에서 추적되게(예: '외출·접촉 없이 완결', '개인 단위라 관계로 이어지지 않음', '청년 전용이라 중장년 제외'). 모집공고 군더더기(날짜·인원·문의·이모지) 제거.",
+    "rule10_gender_beneficiary": "gender: CSV 성별로 결정 — '여성,남성'/'남성,여성'=무관, '여성'=여성(남성타깃엔 현행아님), '남성'=남성. 미매칭/불명=무관(기본). beneficiary: 1인가구 본인 대상=당사자(기본), 프로그램이 가족·보호자·주변인을 대상으로 하면=가족·주변인(현행아님). 둘 다 coverage_rule 현행판정에 사용."
+  }
+}

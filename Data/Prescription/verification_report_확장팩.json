@@ -1,0 +1,45 @@
+{
+  "status": "PASS",
+  "total": 530,
+  "target": 532,
+  "id_dup": 0,
+  "errors": 0,
+  "warnings": 0,
+  "by_prefix": {
+    "GG": 366,
+    "P-": 50,
+    "O-": 114
+  },
+  "region_scope_dist": {
+    "국내지역": 416,
+    "국가": 114
+  },
+  "access_mode_dist": {
+    "보편": 470,
+    "선별": 56,
+    "중복배제": 4
+  },
+  "target_age_dist": {
+    "전연령": 262,
+    "중장년": 110,
+    "노인": 137,
+    "청년": 72
+  },
+  "status_dist": {
+    "종료": 295,
+    "운영중": 235
+  },
+  "code_freq": {
+    "STG_FaceExposure": 342,
+    "NEED_RelationRestore": 271,
+    "NEED_NoStigma": 119,
+    "STG_WelfareLabel": 32,
+    "DEP_NoOuting": 31,
+    "STG_RecipientIdentity": 27,
+    "DEP_NoContact": 24,
+    "DEP_FragileSupply": 21,
+    "STG_SelfAction": 7,
+    "DEP_NoRelation": 6
+  },
+  "audit_coverage": "530/530"
+}

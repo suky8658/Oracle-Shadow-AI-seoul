@@ -1,0 +1,355 @@
+{
+  "_README": "SHADOW 처방용 programs enrich 골드 표준 16건(13 기본 + 3 엣지). 작업 전 반드시 정독하고 이 톤·태깅강도(적극)·content 길이(2~3문장)·_audit 근거방식을 그대로 따를 것. 코드 정의·태깅규칙은 ontology.json의 tagging_guide(rule1~9)가 단일 원천. _pattern=대표 패턴, _audit=태깅 근거(검수·일관성용, 최종본 제거).",
+  "_핵심규칙_요약": [
+    "①대면 필수→STG_FaceExposure / 비대면 완결→DEP_NoContact·NoOuting (배타적).",
+    "②NEED_RelationRestore는 (a)사람 간 관계망·공동활동·소통 명시 OR (b)이전가능 생활자립역량(디지털·재무·주거·생활기술·취업/직업)일 때만. 단순 체력·건강·취미·정서회복·자기돌봄은 제외→fulfills 빈 값. 요리·공예 강습은 '함께 나눠먹기·소통' 명시 때만(아니면 빈 값).",
+    "③fulfills_needs 수동태깅은 NoStigma·RelationRestore 둘만. UniversalAccess(access==보편)·Transferable(regions==서울전체)는 그래프가 자동 파생—수동으로 안 적음.",
+    "④access_mode: 연령·지역 세그먼트만으로는 '보편'. 자격·위기·상황 심사 또는 '종합 고려 후 선정'만 '선별'. 타 급여/사업 배제·중복수혜 금지는 '중복배제'.",
+    "⑤STG_RecipientIdentity는 특정 취약군(고독사위험·돌봄청년·위기가구 등)을 자격/대상으로 명시·선별할 때만. 보편 프로그램의 help-seeking 망설임은 제외.",
+    "⑥일회성 단발(1회 행사·물품)→DEP_NoRelation / 반복·상시 공급 끊기면 위기→DEP_FragileSupply / 대행이 다 해줘 수동수혜→DEP_LowEfficacy.",
+    "⑧전달방식 불명/본문 없으면→대면 간주(STG_FaceExposure). '온라인·비대면·화상·앱·전화·배송' 명시 때만 비대면. 본문 없는 제도(약173건)는 명칭·대상으로 추론+_audit 기록.",
+    "⑨tagging_guide에 없는 애매한 케이스→판정 기준·이유를 work/decisions_<담당>.md에 기록하고 배치 전체 일관 적용(플립플롭 금지). 병합 시 통일.",
+    "[서울 현행에 드문 코드] STG_PublicExposure·DEP_NoRelation·DEP_LowEfficacy = 클린 예시 없음(드묾). 정의(ontology) 보고 해당 시에만 부여. NEED_NoStigma도 희소(=빈틈). NEED_Transferable=0(서울전체 제도 없음=빈틈, 해외 이식이 채움)."
+  ],
+  "examples": [
+    {
+      "program_id": "P-0265",
+      "_pattern": "상시 IoT 안부장비 — FragileSupply·비대면의존 + 위기·소득 선별",
+      "name": "2025년 안심장비지원사업 '뿌꾸네 안전지킴이'",
+      "content": "강북구 위기 1인가구에게 화재경보기와 스마트플러그(전력 사용 감지)·현관 CCTV 등 안전장비를 설치해주는 '뿌꾸네 안전지킴이'. 기초수급·중위소득 50% 미만 가구를 우선 선별한다. 장비가 이상 징후를 비대면으로 감지하는 방식이라 사람 간 접촉이나 외출 없이 작동하고, 상시 작동하는 장비에 의존해 끊기면 곧바로 위기로 이어진다.",
+      "rationale": "스스로 신청하기 어려운 가구도 장비로 위기를 자동 감지할 수 있다.",
+      "regions": ["강북구"],
+      "target_age": ["전연령"],
+      "access_mode": "선별",
+      "stimulates_stigma": ["STG_WelfareLabel", "STG_RecipientIdentity"],
+      "deepens_dependency": ["DEP_NoContact", "DEP_NoOuting", "DEP_FragileSupply"],
+      "fulfills_needs": [],
+      "status": "종료",
+      "evidence_ids": [],
+      "_audit": {
+        "access_mode": "중위소득 50% 미만·기초수급 우선 선별 → 선별(규칙④ 자격/위기 심사)",
+        "STG_WelfareLabel": "소득 50% 미만·기초수급 = 소득/복지 기준",
+        "STG_RecipientIdentity": "'위기 1인가구'를 발굴·대상화(규칙⑤ 특정 취약군 명시)",
+        "DEP_NoContact": "센서·CCTV가 사람 접촉 대신 비대면 감지",
+        "DEP_NoOuting": "장비가 집에서 작동, 외출 불필요",
+        "DEP_FragileSupply": "상시 작동 장비에 의존 → 끊기면 즉시 위기(규칙⑥)"
+      }
+    },
+    {
+      "program_id": "P-1434",
+      "_pattern": "비대면 = 무낙인 강점 + 의존 한계 trade-off",
+      "name": "5월 요리하는 영일이(비대면) 참여자 모집",
+      "content": "서울 생활권 1인가구를 위한 비대면 반찬요리 프로그램 '요리하는 영일이'. 매주 저녁 ZOOM 화상으로 강사를 따라 반찬을 만든다. 재료는 각자 집에서 준비·조리해 외출이나 대면 없이 완결된다. 복지 라벨 없이 누구나 화면으로 참여해 낙인 부담은 낮지만, 대면 접촉과 외출 동기는 주지 못한다.",
+      "rationale": "집에서 부담 없이 참여하지만 사람 간 접촉·외출로는 이어지지 않는다.",
+      "regions": ["영등포구"],
+      "target_age": ["전연령"],
+      "access_mode": "보편",
+      "stimulates_stigma": [],
+      "deepens_dependency": ["DEP_NoContact", "DEP_NoOuting"],
+      "fulfills_needs": ["NEED_NoStigma"],
+      "status": "종료",
+      "evidence_ids": [],
+      "_audit": {
+        "access_mode": "서울 생활권 누구나, 선착순 → 보편",
+        "DEP_NoContact": "비대면 ZOOM, 대면 접촉 없음",
+        "DEP_NoOuting": "집에서 재료 준비·조리, 외출 없음",
+        "NEED_NoStigma": "복지 라벨 없는 생활(요리) 언어 + 비대면이라 신상노출·대면 부담 없음 → 무낙인 전달방식(규칙③). 단 의존을 심화시키는 한계와 공존",
+        "해설": "강점(무낙인)과 한계(의존)가 한 제도에 공존하는 trade-off 사례"
+      }
+    },
+    {
+      "program_id": "P-1395",
+      "_pattern": "대면 소셜다이닝 — 낙인(대면)+강점(관계복원) 공존",
+      "name": "중장년 1인가구 행복한 밥상 [마포쿠키]_4월 참여자 모집",
+      "content": "마포구 중장년 1인가구를 위한 건강요리 모임 '마포쿠키'. 매 회차 저염·저당 식단을 강사·이웃과 함께 직접 조리하고 둘러앉아 나눠 먹는다(소셜다이닝). 대면 집단활동으로 혼밥·고립을 완화하고 이웃 관계망을 형성하는 데 초점이 있다.",
+      "rationale": "공동 조리·식사를 매개로 이웃 관계망을 형성한다.",
+      "regions": ["마포구"],
+      "target_age": ["중장년", "노인"],
+      "access_mode": "보편",
+      "stimulates_stigma": ["STG_FaceExposure"],
+      "deepens_dependency": [],
+      "fulfills_needs": ["NEED_RelationRestore"],
+      "status": "운영중",
+      "evidence_ids": [],
+      "_audit": {
+        "access_mode": "전화·QR·링크, 누구나 → 보편 (UniversalAccess는 보편이라 그래프 자동파생, 수동 미기재)",
+        "STG_FaceExposure": "센터 방문 대면 집단활동 필수 → 신상 식별(규칙①)",
+        "NEED_RelationRestore": "함께 조리·식사·소통 = 사람 간 관계망 형성(규칙② a)"
+      }
+    },
+    {
+      "program_id": "P-1467",
+      "_pattern": "청년 전용(연령빈틈) + 대면 소셜다이닝 + 서류부담",
+      "name": "[특별2기] 청년 1인가구 소셜다이닝 건강한 밥상 참여자 모집",
+      "content": "영등포구 청년(19~39세) 1인가구를 위한 소셜다이닝 '건강한 밥상'. 4주간 셰프와 함께 자취 맞춤 요리를 만들어 나누고, 단톡방·반려식물 키우기 등 소통 프로그램과 챌린지를 병행한다. 청년 전용이라 중장년 이상은 대상에서 제외된다.",
+      "rationale": "공동 조리와 온라인 소통으로 청년 1인가구의 관계망을 형성한다.",
+      "regions": ["영등포구"],
+      "target_age": ["청년"],
+      "access_mode": "선별",
+      "stimulates_stigma": ["STG_FaceExposure", "STG_SelfAction"],
+      "deepens_dependency": [],
+      "fulfills_needs": ["NEED_RelationRestore"],
+      "status": "종료",
+      "evidence_ids": [],
+      "_audit": {
+        "access_mode": "'연령대·거주지 종합 고려 후 선정' → 선별(규칙④)",
+        "STG_FaceExposure": "봄쿡식당 대면 요리교실 필수",
+        "STG_SelfAction": "주민등록등본+재직증명서, 복지대상 증명(해당시) 등 서류 제출 부담",
+        "NEED_RelationRestore": "소셜다이닝+단톡방 소통+반려식물 챌린지 = 관계망(규칙② a)",
+        "현행판정": "청년 전용 → 중장년 미포함 = 현행 아님(빈틈). 관계복원 제공이라 중장년용 이식후보 자격은 유지"
+      }
+    },
+    {
+      "program_id": "P-1533",
+      "_pattern": "위기/취약 호명 선별 — 자기돌봄은 needs 아님(규칙②)",
+      "name": "돌봄청년 프로그램 '돌봄 정류장(9월)' 참여자 모집",
+      "content": "가족을 돌보는 청년(영케어러)을 위한 자기돌봄 프로그램 '돌봄 정류장'. 도자공예·티클래스·필라테스 등 매달 다른 활동으로 돌봄에 지친 청년의 쉼을 돕는다. '가족을 돌보는 청년'이라는 자격을 심사해 선별하며 대면으로 진행된다. 휴식·여가 위주라 관계망이나 생활자립역량 형성으로는 이어지지 않는다.",
+      "rationale": "돌봄 부담을 진 청년 본인의 쉼에 초점을 둔다.",
+      "regions": ["용산구"],
+      "target_age": ["청년"],
+      "access_mode": "선별",
+      "stimulates_stigma": ["STG_RecipientIdentity", "STG_FaceExposure"],
+      "deepens_dependency": [],
+      "fulfills_needs": [],
+      "status": "종료",
+      "evidence_ids": [],
+      "_audit": {
+        "access_mode": "'가족을 돌보는 청년' 자격 심사 → 선별 (연령/지역 세그먼트가 아니라 상황·자격, 규칙④)",
+        "STG_RecipientIdentity": "'돌봄청년/영케어러' 특정 취약군 호명(규칙⑤)",
+        "STG_FaceExposure": "도자·티클래스·필라테스 등 대면 활동",
+        "fulfills_needs": "자기돌봄·휴식·여가는 관계망도 (디지털·재무·생활기술)자립역량도 아님 → 빈 값(규칙②)"
+      }
+    },
+    {
+      "program_id": "P-0497",
+      "_pattern": "중복배제 + 소득낙인 + 서류부담 (일회성이라 DEP 없음)",
+      "name": "[동행지원] <광진인(IN)> 3월 참여자 모집",
+      "content": "광진구로 이사했거나 이사 예정인 1인가구에게 이사지원금(최대 30만원)과 침구를 지원하는 동행지원사업 '광진인'. 중위소득 150% 이하 소득 기준과 임차보증금 요건을 충족해야 하고, 등본·건강보험료납부확인서·이사견적서 등 다수 서류를 제출해 소득순으로 선정한다. 기초수급자·타 사업 수혜자는 제외된다.",
+      "rationale": "이사라는 생활 계기에 맞춰 주거비 부담을 덜어준다.",
+      "regions": ["광진구"],
+      "target_age": ["전연령"],
+      "access_mode": "중복배제",
+      "stimulates_stigma": ["STG_WelfareLabel", "STG_SelfAction"],
+      "deepens_dependency": [],
+      "fulfills_needs": [],
+      "status": "운영중",
+      "evidence_ids": [],
+      "_audit": {
+        "access_mode": "'타 관련사업 선정자 중복지원 불가', 기초수급 제외 → 중복배제(규칙④)",
+        "STG_WelfareLabel": "중위소득 150%·건강보험료·임차보증금 소득기준",
+        "STG_SelfAction": "등본·임대차계약서·건강보험료확인서·이사견적서·통장사본 등 다수 증빙",
+        "deepens_dependency": "이사지원금은 일회성 생활계기 대응 → 반복·상시 의존 아님 → DEP 빈 값(규칙⑥: 단발 현금은 NoRelation도 남발 안 함)"
+      }
+    },
+    {
+      "program_id": "P-0248",
+      "_pattern": "대면 + 디지털 자립역량 = RelationRestore(b)",
+      "name": "8월 키오스크 정보화 교육",
+      "content": "강동구 장노년(만 50세 이상) 1인가구를 위한 키오스크 정보화 교육. 무인 단말기 기본 조작부터 실생활 활용까지 직접 실습하며 익힌다. 디지털 소외로 인한 생활 불편을 줄이고 스스로 처리하는 자립 역량을 길러주는 대면 교육이다.",
+      "rationale": "디지털 자립 역량을 길러 일상 의존을 줄인다.",
+      "regions": ["강동구"],
+      "target_age": ["중장년", "노인"],
+      "access_mode": "보편",
+      "stimulates_stigma": ["STG_FaceExposure"],
+      "deepens_dependency": [],
+      "fulfills_needs": ["NEED_RelationRestore"],
+      "status": "종료",
+      "evidence_ids": [],
+      "_audit": {
+        "access_mode": "장노년 누구나 → 보편",
+        "STG_FaceExposure": "대면 실습 교육",
+        "NEED_RelationRestore": "디지털(키오스크)은 이전가능 생활자립역량 → 규칙② (b)에 해당. 단순 건강·취미와 구분"
+      }
+    },
+    {
+      "program_id": "P-0648",
+      "_pattern": "생활자립역량(재무·주거) = RelationRestore(b), 청년빈틈",
+      "name": "1인가구 독립생활능력프로그램 '청년기-내 집 찾기 생존 가이드(feat.전세사기)'",
+      "content": "노원구 청년(20~30대) 1인가구를 위한 독립생활능력 프로그램 '내 집 찾기 생존 가이드'. 집 구하기·임대차 계약·전세사기 예방 등 자취에 필요한 부동산·생활 실무를 전문가와 함께 익힌다. 혼자 살며 스스로 해결해야 할 생활 자립 역량을 길러주는 대면 교육으로, 청년 전용이라 중장년은 제외된다.",
+      "rationale": "주거·재무 실무 역량을 길러 독립생활의 의존·위험을 줄인다.",
+      "regions": ["노원구"],
+      "target_age": ["청년"],
+      "access_mode": "보편",
+      "stimulates_stigma": ["STG_FaceExposure"],
+      "deepens_dependency": [],
+      "fulfills_needs": ["NEED_RelationRestore"],
+      "status": "운영중",
+      "evidence_ids": [],
+      "_audit": {
+        "access_mode": "청년 1인가구 신청, 자격심사 없음 → 보편",
+        "STG_FaceExposure": "대면 저녁 강의",
+        "NEED_RelationRestore": "부동산·재무·생활 실무 = 이전가능 생활자립역량(규칙② b). 디지털 외 자립역량 예시",
+        "현행판정": "청년 전용 → 중장년 미포함 = 빈틈"
+      }
+    },
+    {
+      "program_id": "P-0290",
+      "_pattern": "보편 대면 상담 — FaceExposure만, 정서회복은 needs 아님(②), 망설임은 RecipientID 아님(⑤)",
+      "name": "1인가구 전문심리상담 '뿌꾸네 마음쉼터'",
+      "content": "강북구 1인가구를 위한 전문 심리상담 '뿌꾸네 마음쉼터'. 접수상담을 거쳐 주 1회 일대일 대면 상담을 제공하고 필요 시 심리검사를 병행한다. 외로움·고립을 겪는 1인가구의 정서 회복을 돕지만, 정서 회복 자체는 처방 needs(관계망·자립) 정의에는 들어가지 않는다.",
+      "rationale": "전문 상담으로 정서적 어려움을 회복하도록 돕는다.",
+      "regions": ["강북구"],
+      "target_age": ["전연령"],
+      "access_mode": "보편",
+      "stimulates_stigma": ["STG_FaceExposure"],
+      "deepens_dependency": [],
+      "fulfills_needs": [],
+      "status": "운영중",
+      "evidence_ids": [],
+      "_audit": {
+        "access_mode": "전생애 1인가구 누구나 신청(접수상담 후 연계) → 보편",
+        "STG_FaceExposure": "일대일 대면 상담",
+        "RecipientID_미부여": "보편 상담이라 누구나 신청 가능, 특정 취약군을 자격으로 호명·선별하지 않음 → RecipientIdentity 미부여(규칙⑤). '상담받아도 될까' 망설임은 일반적 help-seeking이라 제외",
+        "fulfills_needs": "정서 회복은 관계망도 생활자립역량도 아님 → 빈 값(규칙②)"
+      }
+    },
+    {
+      "program_id": "P-0532",
+      "_pattern": "비대면 상담 — 의존(NoContact)+위기호명 (대조: P-0290 대면상담)",
+      "name": "[자기돌봄역량강화] 온라인 상담 '히어 포유' 참여자 모집",
+      "content": "광진구 1인가구를 위한 비대면 심리상담 '히어 포유'. 사전 검사에서 어려움이 높은 것으로 선별된 소수에게 주 1회씩 총 5회 온라인 상담을 제공한다. 외로움·고립 위험군을 대상으로 하되, 화상으로만 진행돼 대면 접촉이나 외출 없이 완결된다.",
+      "rationale": "위험군을 선별해 비대면으로 상담 접근성을 높인다.",
+      "regions": ["광진구"],
+      "target_age": ["전연령"],
+      "access_mode": "선별",
+      "stimulates_stigma": ["STG_RecipientIdentity"],
+      "deepens_dependency": ["DEP_NoContact", "DEP_NoOuting"],
+      "fulfills_needs": [],
+      "status": "종료",
+      "evidence_ids": [],
+      "_audit": {
+        "access_mode": "'사전검사로 높은 수준의 어려움에 해당하는 경우에만' → 위기 선별(규칙④)",
+        "STG_RecipientIdentity": "'외로움·고립 위험군'으로 선별·호명(규칙⑤). 대면 아님 → FaceExposure 미부여",
+        "DEP_NoContact": "온라인 상담, 대면 없음",
+        "DEP_NoOuting": "집에서 화상 참여, 외출 없음",
+        "대조": "P-0290(대면상담)=FaceExposure만이고, 본 건은 비대면이라 의존 한계가 부각·위기 선별로 RecipientID 추가"
+      }
+    },
+    {
+      "program_id": "P-1019",
+      "_pattern": "보편 대면 취미공방 — 낙인(대면)만, 강점 없음",
+      "name": "[월별 만들기] 7월 서씽 GO! GO!",
+      "content": "서울 생활권 1인가구를 위한 월별 공방 체험 '서씽 GO!GO!'. 매달 압화 액자·캔들·가죽공예 등 다른 만들기 주제를 정해 센터에서 직접 제작한다. 별도 강의나 모둠 활동 없이 개인 단위로 진행되어, 외출 계기는 되지만 참가자 간 관계 형성으로 이어지지는 않는다.",
+      "rationale": "부담 없는 취미로 센터 방문·외출 동기를 제공한다.",
+      "regions": ["서대문구"],
+      "target_age": ["전연령"],
+      "access_mode": "보편",
+      "stimulates_stigma": ["STG_FaceExposure"],
+      "deepens_dependency": [],
+      "fulfills_needs": [],
+      "status": "운영중",
+      "evidence_ids": [],
+      "_audit": {
+        "access_mode": "온라인20·방문30 선착순, 1인가구 증빙만 → 보편",
+        "STG_FaceExposure": "센터 방문 대면 공방",
+        "fulfills_needs": "별도 강의 없는 개인 만들기 → 관계망 없음, 자립역량 아님 → 빈 값(규칙②). 낙인(대면)만 있고 강점 없는 케이스"
+      }
+    },
+    {
+      "program_id": "P-0137",
+      "_pattern": "노인 전용(연령빈틈) — 건강은 needs 아님(②)",
+      "name": "백세밥상 밥심으로 9988까지 4기_어르신",
+      "content": "강남구 6070 어르신 1인가구를 위한 건강 식생활 프로그램 '백세밥상'. 근력 늘리기를 목표로 단백질 중심 식단 교육과 트레이너 맞춤 운동을 6주간 진행한다. 노인 전용이라 중장년 이하는 제외되고, 건강 증진이 주목적이라 관계망·생활자립역량 형성으로는 보기 어렵다.",
+      "rationale": "단백질 식단·운동으로 노년 건강을 관리하도록 돕는다.",
+      "regions": ["강남구"],
+      "target_age": ["노인"],
+      "access_mode": "보편",
+      "stimulates_stigma": ["STG_FaceExposure"],
+      "deepens_dependency": [],
+      "fulfills_needs": [],
+      "status": "운영중",
+      "evidence_ids": [],
+      "_audit": {
+        "access_mode": "강남 생활권 6070 어르신 신청 → 보편",
+        "STG_FaceExposure": "대면 식생활·운동 프로그램",
+        "fulfills_needs": "식단·운동은 건강 증진 → 관계망도 (디지털·재무·생활기술)자립역량도 아님 → 빈 값(규칙②). P-0242 필라테스와 동일 기준",
+        "현행판정": "노인 전용 → 중장년 미포함 = coverage_rule상 현행 아님(빈틈)"
+      }
+    },
+    {
+      "program_id": "P-0585",
+      "_pattern": "대면 집단 정서/스트레스 — 정서회복은 needs 아님(②), 상황선별은 RecipientID 아님(⑤)",
+      "name": "1인가구지원사업 집단상담 프로그램 '마음세탁소'",
+      "content": "금천구 1인가구를 위한 집단상담 '마음세탁소'. 스트레스로 어려움을 겪는 1인가구 소수를 선별해, 3회기 동안 감정 카드 등으로 스트레스를 점검하고 해소법을 함께 찾는다. 대면 집단 정서 프로그램으로, 정서 회복은 처방 needs(관계망·자립) 정의에 포함되지 않는다.",
+      "rationale": "집단 상담으로 쌓인 스트레스를 점검·해소하도록 돕는다.",
+      "regions": ["금천구"],
+      "target_age": ["청년", "중장년"],
+      "access_mode": "선별",
+      "stimulates_stigma": ["STG_FaceExposure"],
+      "deepens_dependency": [],
+      "fulfills_needs": [],
+      "status": "운영중",
+      "evidence_ids": [],
+      "_audit": {
+        "access_mode": "'스트레스 관리 어려운/도움 필요한' 상황 선별 → 선별(규칙④)",
+        "STG_FaceExposure": "대면 집단 진행",
+        "RecipientID_미부여": "'스트레스 있는 사람'은 특정 취약군(고독사위험·돌봄청년 등) 호명이 아님 → 미부여(규칙⑤)",
+        "fulfills_needs": "정서 회복 + 단발 3회기라 관계망 형성으로 보기 어려움 → 빈 값(규칙②)"
+      }
+    },
+    {
+      "program_id": "P-0035",
+      "_pattern": "[엣지] 본문 없음 + 취업특강 — rule8(대면 간주) + 취업=자립역량(rule2 b)",
+      "name": "<25년도 채용 트랜드 분석과 26년도 취업 전략>",
+      "content": "강남구 청년(2030) 1인가구를 위한 취업 특강. 최신 채용 트렌드를 분석하고 다음 해 취업 전략을 안내한다(원본 상세 내용 없음 — 명칭·대상 기반). 청년 전용이라 중장년은 대상에서 제외된다.",
+      "rationale": "취업 역량을 길러 경제적 자립을 돕는다.",
+      "regions": ["강남구"],
+      "target_age": ["청년"],
+      "access_mode": "보편",
+      "stimulates_stigma": ["STG_FaceExposure"],
+      "deepens_dependency": [],
+      "fulfills_needs": ["NEED_RelationRestore"],
+      "status": "종료",
+      "evidence_ids": [],
+      "_audit": {
+        "content": "원본 본문 없음(광고 스크립트뿐) → 명칭·대상 기반 작성(rule8)",
+        "access_mode": "자격 단서 없음 → 보편",
+        "STG_FaceExposure": "전달방식 불명 → 대면 간주(rule8). 본문에 온라인/비대면 명시 없음",
+        "NEED_RelationRestore": "취업/직업 역량 = 의존 줄이는 이전가능 자립역량(rule2 b)",
+        "현행판정": "청년 전용 → 중장년 미포함 = 빈틈"
+      }
+    },
+    {
+      "program_id": "P-0114",
+      "_pattern": "[엣지] 요리 강습 — 소통 명시 없으면 needs 빈 값(rule2, P-1395 소셜다이닝과 대조)",
+      "name": "금쪽같은내통장 도시락솔루션",
+      "content": "강남구 1인가구를 위한 도시락 반찬 만들기 강습 '금쪽같은 내통장 도시락 솔루션'. 멤버십 회원이 모여 강사와 함께 도시락 반찬을 직접 만든다. 대면 소규모 강습이며 참가비(회비)가 있고, 함께 나눠먹기·소통은 명시되지 않아 개인 요리 습득에 가깝다.",
+      "rationale": "반찬을 직접 만들어 식생활을 챙기도록 돕는다.",
+      "regions": ["강남구"],
+      "target_age": ["전연령"],
+      "access_mode": "보편",
+      "stimulates_stigma": ["STG_FaceExposure"],
+      "deepens_dependency": [],
+      "fulfills_needs": [],
+      "status": "운영중",
+      "evidence_ids": [],
+      "_audit": {
+        "access_mode": "멤버십(누구나 가입) 회원, 참가비는 자격배제 아님 → 보편",
+        "STG_FaceExposure": "대면 요리 강습",
+        "fulfills_needs": "요리 강습이나 '함께 나눠먹기·소통' 명시 없음 → 빈 값(rule2: 요리강습은 소통 명시 때만 RelationRestore). P-1395 소셜다이닝(관계망)과 대조"
+      }
+    },
+    {
+      "program_id": "P-0135",
+      "_pattern": "[엣지] 본문 없음 + 5060 건강 — rule8(대면 간주) + 건강은 needs 아님 + 우리 타깃(현행 인정)",
+      "name": "밝은나눔안과와 함께하는 <5060 눈 건강 증진 프로그램>",
+      "content": "강남구 5060 1인가구를 위해 안과(밝은나눔안과)와 협력해 진행하는 눈 건강 증진 프로그램(원본 상세 내용 없음 — 명칭·대상 기반). 눈 건강 점검·관리가 주목적이다.",
+      "rationale": "안과 연계로 중장년 1인가구의 눈 건강을 관리한다.",
+      "regions": ["강남구"],
+      "target_age": ["중장년", "노인"],
+      "access_mode": "보편",
+      "stimulates_stigma": ["STG_FaceExposure"],
+      "deepens_dependency": [],
+      "fulfills_needs": [],
+      "status": "종료",
+      "evidence_ids": [],
+      "_audit": {
+        "content": "원본 본문 없음 → 명칭·대상 기반 작성(rule8)",
+        "access_mode": "자격 단서 없음 → 보편",
+        "STG_FaceExposure": "전달방식 불명 → 대면 간주(rule8)",
+        "fulfills_needs": "건강 점검·관리 = 건강증진 → needs 아님(rule2)",
+        "현행판정": "5060(중장년·노인) = 우리 타깃 포함 → 현행 인정(빈틈 아님)"
+      }
+    }
+  ]
+}

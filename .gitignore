@@ -5,6 +5,13 @@ Data/서울시 사회복지시설 목록/
 Data/서울시 상권분석서비스/
 Data/통신정보 데이터/
 
+# Prescription 대용량 원본 CSV (GitHub 100MB 초과) — 디스크엔 보관, 커밋만 제외
+Data/Prescription/*.csv
+
+# Prescription 작업 중간물·스크래치 (재생성 가능, 커밋 불필요)
+Data/Prescription/work/source_*.json
+Data/Prescription/work/_*
+
 # 캐시 및 모델 파일
 **/*.pkl
 
