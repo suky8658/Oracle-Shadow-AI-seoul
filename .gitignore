@@ -31,3 +31,13 @@ __pycache__/
 .ipynb_checkpoints/
 .env
 .claude/
+
+# 비밀키·DB 접속 자격증명 (절대 커밋 금지)
+Wallet_*.zip
+Wallet_*/
+wallet/
+*.pem
+
+# 처방 생성물 (돌릴 때마다 생김, 커밋 불필요)
+처방입력_*.json
+처방문_*.md

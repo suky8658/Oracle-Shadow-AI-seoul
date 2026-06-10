@@ -6,3 +6,8 @@ scipy==1.17.1
 matplotlib==3.10.9
 scikit-learn==1.8.0
 shap==0.51.0
+
+# 처방 엔진(shadow_rag_llm.py) — ADB 그래프 연동 + OpenAI 생성
+oracledb==4.0.1
+openai==2.41.0
+python-dotenv==1.2.2
