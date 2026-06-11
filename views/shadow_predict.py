@@ -24,7 +24,7 @@ from shadow_common import (  # noqa: E402
 KO_FONT = "Malgun Gothic, Apple SD Gothic Neo, sans-serif"
 
 st.markdown("<div class='page-head'><h1>🔮 전이예측 · 자치구</h1>"
-            "<p>행정동 전이예측 모델(GBM)을 자치구로 집계 — 각 자치구가 "
+            "<p>행정동 전이예측 모델(GBM)을 자치구로 집계 - 각 자치구가 "
             "<b>Q1 고위험군으로 전이할 확률</b>을 선제적으로 봅니다.</p></div>",
             unsafe_allow_html=True)
 
@@ -61,7 +61,7 @@ with col_rank:
     ))
     fig.update_layout(
         height=max(420, len(r) * 23),
-        paper_bgcolor="white", plot_bgcolor="white",
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         margin={"t": 10, "b": 10, "l": 0, "r": 50},
         xaxis=dict(title="Q1 전이확률 (%)", gridcolor="#eef2f7"),
         font=dict(family=KO_FONT, size=11),

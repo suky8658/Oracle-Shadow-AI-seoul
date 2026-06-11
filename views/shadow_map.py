@@ -1,5 +1,5 @@
 """
-🗺️ SHADOW Map — 진단 맵 (Dependency × Avoidance 4분면)
+🗺️ SHADOW Map - 진단 맵 (Dependency × Avoidance 4분면)
 ================================================================
 서울 자치구를 두 축으로 진단한다.
   · Dependency (편의 의존)  : 비대면 생활 구조에 얼마나 잠겨 있는가
@@ -20,8 +20,8 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from kb.prescriptions import KB, Q_COLORS  # noqa: E402
+from theme import KO_FONT  # noqa: E402  (Pretendard 통일)
 
-KO_FONT = "Malgun Gothic, Apple SD Gothic Neo, sans-serif"
 Q_LABEL = {
     "Q1": "Q1 · 최고위험",
     "Q2": "Q2 · 정서취약",
@@ -44,7 +44,7 @@ def load_shadow():
 
 @st.cache_data
 def load_dep_dong():
-    """행정동별 Dependency (편의의 역설) — 보조 디테일."""
+    """행정동별 Dependency (편의의 역설) - 보조 디테일."""
     p = ROOT / "Outputs" / "편의의 역설" / "dependency_index.csv"
     return pd.read_csv(p, encoding="utf-8-sig") if p.exists() else None
 
@@ -54,8 +54,8 @@ dep_dong = load_dep_dong()
 
 # ── 헤더 ──────────────────────────────────────────────────────────────
 st.markdown(
-    "<div class='page-head'><h1>🗺️ SHADOW Map · 진단 맵</h1>"
-    "<p>Dependency(편의 의존) × Avoidance(복지 회피) — 두 역설이 겹치는 자리에서 "
+    "<div class='page-head'><h1>SHADOW Map · 진단 맵</h1>"
+    "<p>Dependency(편의 의존) × Avoidance(복지 회피) - 두 역설이 겹치는 자리에서 "
     "‘보이지 않는 고립’의 유형을 진단합니다.</p></div>",
     unsafe_allow_html=True,
 )
@@ -79,38 +79,38 @@ dep_split = split_point(["Q3", "Q4"], ["Q1", "Q2"], "Dependency")
 avo_split = split_point(["Q2", "Q3"], ["Q1", "Q4"], "Avoidance")
 
 # ── 두 축이란? (정보 보강) ────────────────────────────────────────────
-ca, cb = st.columns(2)
+ca, cb = st.columns(2, gap="large")
 ca.markdown(
-    "<div class='card'><b>↔ Dependency · 편의 의존</b><br>"
-    "<span style='color:#7b8794;font-size:.86rem'>배달·간편식·생활편의 인프라로 "
+    "<div class='card'>"
+    "<div style='font-weight:700;font-size:.98rem;margin-bottom:8px'>Dependency · 편의 의존</div>"
+    "<div style='color:#8B95A1;font-size:.9rem;line-height:1.6'>배달·간편식·생활편의 인프라로 "
     "혼자서도 불편 없이 사는 정도. 높을수록 외출·대면의 필요가 줄어 "
-    "<b>고립이 보이지 않게 유지</b>됩니다. (편리함의 역설)</span></div>",
+    "<b style='color:#191F28'>고립이 보이지 않게 유지</b>됩니다.</div></div>",
     unsafe_allow_html=True,
 )
 cb.markdown(
-    "<div class='card'><b>↕ Avoidance · 복지 회피</b><br>"
-    "<span style='color:#7b8794;font-size:.86rem'>복지 수요가 있어도 낙인·불신 때문에 "
-    "제도와 연결되지 않는 정도. 높을수록 <b>손 내밀수록 더 숨는</b> 경향입니다. "
-    "(복지의 역설)</span></div>",
+    "<div class='card'>"
+    "<div style='font-weight:700;font-size:.98rem;margin-bottom:8px'>Avoidance · 복지 회피</div>"
+    "<div style='color:#8B95A1;font-size:.9rem;line-height:1.6'>복지 수요가 있어도 낙인·불신 때문에 "
+    "제도와 연결되지 않는 정도. 높을수록 <b style='color:#191F28'>손 내밀수록 더 숨는</b> "
+    "경향입니다.</div></div>",
     unsafe_allow_html=True,
 )
-st.markdown("")
+st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
 # ── 분면 카운트 카드 ──────────────────────────────────────────────────
 qcounts = sdf["Quadrant"].value_counts()
-cc = st.columns(4)
+cc = st.columns(4, gap="medium")
 for col, q in zip(cc, ["Q1", "Q2", "Q3", "Q4"]):
     n = int(qcounts.get(q, 0))
     col.markdown(
-        f"<div style='border-top:4px solid {Q_COLORS[q]};border-radius:12px;padding:12px;"
-        f"background:#fff;box-shadow:0 2px 10px rgba(20,40,80,.05);text-align:center;"
-        f"border:1px solid #e8edf3'>"
-        f"<div style='font-size:1.8rem;font-weight:800;color:{Q_COLORS[q]}'>{n}</div>"
-        f"<div style='font-size:.78rem;color:#1f2d3d;font-weight:700'>{Q_LABEL[q]}</div>"
-        f"<div style='font-size:.72rem;color:#7b8794'>{Q_STATE[q]}</div></div>",
+        f"<div class='grade-card'>"
+        f"<div class='num' style='color:{Q_COLORS[q]}'>{n}</div>"
+        f"<div class='lbl'>{Q_LABEL[q]}</div>"
+        f"<div class='sub'>{Q_STATE[q]}</div></div>",
         unsafe_allow_html=True,
     )
-st.markdown("")
+st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
 
 # ── 지도 + 사이드 진단 ────────────────────────────────────────────────
 col_map, col_side = st.columns([3, 1.15])
@@ -126,8 +126,8 @@ with col_map:
     ]:
         fig.add_shape(type="rect", x0=x0, x1=x1, y0=y0, y1=y1,
                       fillcolor=Q_COLORS[q], opacity=0.07, line_width=0, layer="below")
-    fig.add_vline(x=dep_split, line_dash="dot", line_color="#aaa")
-    fig.add_hline(y=avo_split, line_dash="dot", line_color="#aaa")
+    fig.add_vline(x=dep_split, line_dash="dot", line_color="#E5E8EB", line_width=1)
+    fig.add_hline(y=avo_split, line_dash="dot", line_color="#E5E8EB", line_width=1)
     for x, y, txt, q, ax, ay in [
         (xr[1], yr[1], "Q1 최고위험", "Q1", "right", "top"),
         (xr[1], yr[0], "Q2 정서취약", "Q2", "right", "bottom"),
@@ -136,7 +136,7 @@ with col_map:
     ]:
         fig.add_annotation(x=x, y=y, text=txt, showarrow=False,
                            font=dict(color=Q_COLORS[q], size=12, family=KO_FONT),
-                           xanchor=ax, yanchor=ay, opacity=0.75)
+                           xanchor=ax, yanchor=ay, opacity=0.55)
     for q in ["Q1", "Q2", "Q3", "Q4"]:
         sub = sdf[sdf["Quadrant"] == q]
         if sub.empty:
@@ -145,53 +145,60 @@ with col_map:
             x=sub["Dependency"], y=sub["Avoidance"],
             mode="markers+text", name=Q_LABEL[q],
             text=sub["자치구"], textposition="top center",
-            textfont=dict(size=10, family=KO_FONT),
-            marker=dict(size=16, color=Q_COLORS[q], opacity=0.88,
+            textfont=dict(size=9, family=KO_FONT, color="#8B95A1"),
+            marker=dict(size=15, color=Q_COLORS[q], opacity=0.9,
                         line=dict(color="white", width=1.5)),
             customdata=sub[["자치구", "Quadrant"]],
             hovertemplate="<b>%{customdata[0]}</b><br>Dependency %{x:.1f}<br>"
                           "Avoidance %{y:.1f}<br>%{customdata[1]}<extra></extra>",
         ))
     fig.update_layout(
-        height=560, paper_bgcolor="white", plot_bgcolor="#fafbfd",
-        margin={"t": 10, "b": 40, "l": 10, "r": 10},
-        xaxis=dict(title="← Dependency (편의 의존) →", range=xr, gridcolor="#eef2f7"),
-        yaxis=dict(title="← Avoidance (복지 회피) →", range=yr, gridcolor="#eef2f7"),
-        legend=dict(orientation="h", yanchor="bottom", y=1.01, xanchor="right", x=1,
-                    font=dict(family=KO_FONT, size=10)),
+        height=600, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        margin={"t": 10, "b": 40, "l": 10, "r": 10}, showlegend=False,
+        xaxis=dict(title="Dependency (편의 의존) →", range=xr, gridcolor="#E5E8EB",
+                   zeroline=False, showline=False,
+                   title_font=dict(color="#8B95A1", size=12), tickfont=dict(color="#8B95A1")),
+        yaxis=dict(title="Avoidance (복지 회피) →", range=yr, gridcolor="#E5E8EB",
+                   zeroline=False, showline=False,
+                   title_font=dict(color="#8B95A1", size=12), tickfont=dict(color="#8B95A1")),
         font=dict(family=KO_FONT),
     )
-    st.plotly_chart(fig, width="stretch")
-    st.caption("점선 = 사분면 경계 · 색 = 진단된 Q유형 · 위치 = 두 지수 좌표")
+    st.plotly_chart(fig, use_container_width=True)
+    st.caption("색 = 진단된 Q유형 · 위치 = 두 지수 좌표")
 
 with col_side:
-    st.markdown("#### 🔍 자치구 진단")
+    st.markdown("<div style='font-size:1.05rem;font-weight:700;margin-bottom:10px'>자치구 진단</div>",
+                unsafe_allow_html=True)
     gu_m = st.selectbox("자치구", sorted(sdf["자치구"].unique()), key="diag_gu")
     r = sdf[sdf["자치구"] == gu_m].iloc[0]
     q = str(r["Quadrant"])
     qcol = Q_COLORS.get(q, "#95a5a6")
     st.markdown(
-        f"**{gu_m}** <span class='chip' style='background:{qcol}'>{q}</span>",
+        f"<div style='margin:6px 0 4px'><b style='font-size:1.05rem'>{gu_m}</b> "
+        f"<span class='chip' style='background:{qcol}'>{q}</span></div>",
         unsafe_allow_html=True,
     )
     d1, d2 = st.columns(2)
     d1.metric("Dependency", f"{r['Dependency']:.1f}")
     d2.metric("Avoidance", f"{r['Avoidance']:.1f}")
     if q in KB:
-        st.markdown("**심리기저**")
-        st.caption(KB[q]["심리기저"])
-        st.markdown("**처방 방향**")
-        st.caption(KB[q]["처방방향"])
+        st.markdown("<div style='font-weight:700;font-size:.9rem;margin:14px 0 4px'>심리기저</div>",
+                    unsafe_allow_html=True)
+        st.markdown(f"<div style='color:#8B95A1;font-size:.86rem;line-height:1.6'>{KB[q]['심리기저']}</div>",
+                    unsafe_allow_html=True)
+        st.markdown("<div style='font-weight:700;font-size:.9rem;margin:14px 0 4px'>처방 방향</div>",
+                    unsafe_allow_html=True)
+        st.markdown(f"<div style='color:#8B95A1;font-size:.86rem;line-height:1.6'>{KB[q]['처방방향']}</div>",
+                    unsafe_allow_html=True)
     if dep_dong is not None:
         sub_dd = dep_dong[dep_dong["자치구"] == gu_m].sort_values("Dependency", ascending=False)
         if not sub_dd.empty:
-            with st.expander(f"🏘️ {gu_m} 행정동별 의존도 — {len(sub_dd)}개 동"):
+            with st.expander(f"{gu_m} 행정동별 의존도 · {len(sub_dd)}개 동"):
                 st.dataframe(sub_dd[["행정동", "Dependency"]].round(1).reset_index(drop=True),
-                             width="stretch", height=220)
-    st.info("💊 행정동 단위 구체 처방 → **SHADOW AI ▸ RAG 처방**")
+                             use_container_width=True, height=220)
 
 # ── 4분면 유형 설명 (정보 보강) ───────────────────────────────────────
-st.markdown("<div class='sec'>📐 네 가지 진단 유형</div>", unsafe_allow_html=True)
+st.markdown("<div class='sec'>네 가지 진단 유형</div>", unsafe_allow_html=True)
 qc = st.columns(4)
 for col, q in zip(qc, ["Q1", "Q2", "Q3", "Q4"]):
     kb = KB.get(q, {})
@@ -204,7 +211,7 @@ for col, q in zip(qc, ["Q1", "Q2", "Q3", "Q4"]):
     )
 
 # ── 전체 진단 테이블 ──────────────────────────────────────────────────
-with st.expander("📋 자치구별 진단 전체 (25개)"):
+with st.expander("자치구별 진단 전체 (25개)"):
     show = sdf[["자치구", "Dependency", "Avoidance", "Quadrant"]].copy()
     show = show.sort_values(["Quadrant", "Avoidance"], ascending=[True, False]).reset_index(drop=True)
-    st.dataframe(show.round(1), width="stretch", height=400)
+    st.dataframe(show.round(1), use_container_width=True, height=400)

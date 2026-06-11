@@ -48,6 +48,7 @@ SEOUL_WIDE = {"서울전체", "서울시"}
 # ── 프롬프트: 번호 템플릿이 아니라 '자연스러운 분석 글'로 출력 ──────
 SYSTEM_PROMPT = """\
 너는 '서울 5060 남성 1인가구 고립' 문제의 복지 처방을 작성하는 정책 분석가다.
+분석은 엄밀하게 하되, 어조는 너무 딱딱하지 않게 — 읽는 사람을 배려하는 친절하고 정중한 말투로 쓴다.
 너의 일은 새로운 사실을 만드는 것이 아니라, [입력]에 주어진 재료만으로
 하나의 설득력 있는 정책 분석 글을 쓰는 것이다.
 
@@ -57,18 +58,26 @@ SYSTEM_PROMPT = """\
 3. 논문(근거_논문)은 '한계'와 '필요한 방향'을 설명할 때만 인용한다. 외부 제도 사례나 최종 제안에는 논문을 끌어쓰지 마라. (예외: 이식후보가 0건인 한계 — 규칙7)
 4. 외부 사례를 들 때의 근거는 '다른 지역의 실제 제도'(이식후보)다. 논문이 아니라 제도 이름·지역을 댄다.
 5. 논문 인용은 evidence_id가 아니라 (저자, 연도) 형태로 자연스럽게 녹여라.
-6. 근거(논문·통계·실제사례)로만 설득하라. 과장·감정 호소·미사여구 금지.
+6. 근거(논문·통계·실제사례)로만 설득하라. 과장·미사여구는 금지하되, 차갑지 않고 정중하며 따뜻한 어조는 유지하라.
 7. 이식후보 유무에 따라 외부 사례와 제안을 다르게 쓴다:
    - 이식후보(candidates)가 있는 한계(낙인충돌→무낙인, 의존심화→관계복원): 그 '실제 제도'(지역·이름)를 reference_priority(해외>국내타지역>서울타자치구) 순으로 들고, 이 자치구(특히 고위험 행정동)로의 이식을 제안한다.
    - 이식후보가 0건인 구조적 한계(자치구귀속→이식가능, 중복배제→보편접근): 먼저 '이식 가능한 외부 제도가 없는 구조적 빈틈'임을 밝히고(제도 지어내기 금지), 근거_논문 중 외국 사례성 근거가 있으면 그 사례가 방향이 옳음을 보여준다고만 덧붙인 뒤(없으면 생략), 서울 전역 확대·중복수혜 배제 완화 같은 신규 제도 구현을 제안한다.
+8. 전이예측 근거(SHAP·가중편차기여도)를 적극 활용하라. '회피_악화요인'(부호 +, 위험을 키우는)과 '회피_완충요인'(부호 −, 위험을 누르는)은 부호의 뜻을 정확히 반영해 서술한다(완충요인을 위험요인처럼 쓰지 마라). 진단·이식후보의 '우선처방=true'는 그 방향이 지금 실제로 악화 중이라는 신호다 — 모든 한계는 빠짐없이 다루되, 우선처방=true인 한계·need·이식후보를 ③·⑤에서 가장 앞세워 비중 있게 다룬다.
 
 [출력 구조 — 다섯 단계 ①~⑤ (대시보드 섹션 구분용, 이 구조는 반드시 유지)]
 각 단계는 동그라미 번호 + 짧은 라벨로 시작한다. 단, 단계 '안의' 글은 재료(제도·논문·사례)를 기계적으로 나열하지 말고 인과·맥락으로 엮어 한 편의 분석처럼 자연스럽게 써라.
-① 현행: 이 자치구가 왜 위험한지(회피점수·회피_주동인·고위험_행정동 실제 동 이름)를 구체적으로 짚고, 운영 중인 관련 현행 제도를 인정한다.
+① 현행: 이 자치구가 왜 위험한지를 전이예측 근거로 짚는다 — 회피점수와 함께 '회피_악화요인'(위험을 키우는 +요인)을 핵심 근거로 들고, '회피_완충요인'(위험을 누르는 −요인)이 있으면 무엇이 그나마 버팀목인지 짚는다. '고위험_행정동'은 실제 동 이름과 전이확률·주요악화요인을 들어 어디가 왜 위험한지 보인 뒤, 운영 중인 관련 현행 제도를 인정한다.
 ② 한계: 진단에 나온 한계를 빠짐없이 모두 다룬다(하나라도 누락 금지). 각 한계를 해당 논문 근거와 엮되, '제도 A가 있다, 제도 B가 있다'식 끊긴 나열이 아니라 맥락으로 자연스럽게 이어라.
 ③ 방향: 한계가 가리키는 need(필요한 방향)로 넘어간다.
 ④ 외부 레퍼런스: 이식후보가 있으면 그 실제 제도(지역·이름)를 reference_priority(해외>국내타지역>서울타자치구) 순으로, 없으면 '구조적 빈틈'을 밝히고 외국 사례성 근거로 방향만 뒷받침한다(규칙7).
-⑤ 이식 제안: 이 자치구(특히 고위험 행정동)를 위한 구체적 처방으로 닫는다.
+⑤ 이식 제안: 이 자치구를 위한 구체적 처방으로 닫되, '고위험_행정동'을 동 이름·전이확률·주요악화요인과 함께 짚어 '어느 동에 무엇이 왜 필요한지'를 행정동 단위로 구체화한다. '우선처방=true'인 방향(지금 실제로 악화 중)의 제도를 가장 앞세워 제안한다.
+
+[형식 · 가독성 — 출력이 대시보드에 그대로 렌더된다]
+- 다섯 단계 ①~⑤는 각각 별도 문단으로 쓰고, 단계 사이에는 반드시 빈 줄을 한 줄 넣어 시각적으로 분리하라.
+- 한 단계가 길면 그 안에서도 의미 단위로 문단을 나눠 빈 줄로 띄워라. (한 덩어리로 빽빽하게 쓰지 마라)
+- 각 단계의 동그라미 번호 라벨(예: **① 현행**)은 굵게 처리하라.
+- 각 단계에서 정말 중요한 핵심(특히 ⑤의 이식 제안 제도명·핵심 처방, 자치구명, 결정적 한계)은 파란색으로 강조한다. 다음 HTML 태그를 그대로 출력하라: <span style="color:#3182F6;font-weight:700">강조할 말</span>. 단계당 1~2개만, 정말 핵심에만 쓴다(남발 금지).
+- 그 외 가벼운 강조는 **굵게**(마크다운)로만 한다.
 
 [문장 톤 — '짜깁기'처럼 안 보이게]
 - 각 단계 안에서 '제도 A가 있다. 또 제도 B가 있다'식으로 재료를 뚝뚝 끊어 나열하지 마라. 맥락과 인과로 이어 한 편의 글처럼 읽히게 하라.
@@ -214,23 +223,67 @@ def topk(d, k=3):
     return [name for name, _ in sorted(d.items(), key=lambda kv: -(kv[1] or 0))[:k]]
 
 
+# ── 전이예측(SHAP·가중편차기여도) → 처방 방향 매핑 ──────────────────
+# 위험을 '키우는'(부호 +) 요인이 어떤 need(처방 방향)를 요구하는지에 대한 도메인 휴리스틱.
+# 이 표만 고치면 ①(진단·이식후보 우선순위) 기준이 바뀐다.
+RISK_TO_NEED = {
+    "복지불신":   "NEED_NoStigma",        # 복지서비스 불신·거리감 → 무낙인 전달방식
+    "외로움부정": "NEED_RelationRestore",  # 고립인데 외로움 부정 → 관계복원
+    "네트워크축소": "NEED_RelationRestore",  # 도움받을 사람 수 부족(PQ47A) → 관계복원
+    "도움부재":   "NEED_RelationRestore",  # 도움받을 사람 없음(PQ47, 네트워크축소와 동개념) → 관계복원
+}
+
+
+def _signed(d):
+    """기여도 dict → (악화요인[부호 +], 완충요인[부호 -]). 각 항목 (이름, 반올림값)."""
+    if not isinstance(d, dict):
+        return [], []
+    items = [(k, round(float(v), 4)) for k, v in d.items() if v is not None]
+    악화 = sorted([kv for kv in items if kv[1] > 0], key=lambda kv: -kv[1])
+    완충 = sorted([kv for kv in items if kv[1] < 0], key=lambda kv: kv[1])
+    return 악화, 완충
+
+
+def _dong_risk_factors(shap, k=2):
+    """행정동 SHAP에서 '위험↑'(shap_value>0) 상위 k개 요인 라벨.
+    (기존엔 abs_shap 1순위를 그대로 '주요위험요인'으로 썼는데, 그게 보호요인이어도
+     위험요인으로 오표기되던 문제를 바로잡는다.)"""
+    pos = [s for s in (shap or []) if (s.get("shap_value") or 0) > 0]
+    pos.sort(key=lambda s: -(s.get("shap_value") or 0))
+    return [s.get("feature_label", "") for s in pos[:k]]
+
+
 def region_profile(profile, gu, q, SENS, VULN, STG_NAME, DEP_NAME):
     pr = profile.get(gu, {})
     회피 = pr.get("회피분해", {}).get("가중편차기여도") or pr.get("회피분해", {}).get("원본", {})
-    의존 = pr.get("의존분해", {}).get("원본", {})
+    의존 = pr.get("의존분해", {}).get("가중편차기여도") or pr.get("의존분해", {}).get("원본", {})
+    회피_악화, 회피_완충 = _signed(회피)   # 가중편차기여도는 부호가 있어 악화/완충 구분 가능
+
     동 = [d for d in pr.get("행정동", []) if d.get("위험등급") in ("최고위험", "고위험")]
     동.sort(key=lambda d: -(d.get("전이확률") or 0))
     위험동 = [OrderedDict([
         ("행정동", d.get("행정동")), ("위험등급", d.get("위험등급")),
-        ("주요위험요인", (d.get("shap") or [{}])[0].get("feature_label", "")),
+        ("전이확률", d.get("전이확률")),
+        ("주요악화요인", _dong_risk_factors(d.get("shap"))),
     ]) for d in 동[:4]]
+
+    # 지금 '악화 중'(기여도 부호 +)인 회피 요인이 요구하는 처방 방향 → 진단·이식후보 우선순위 신호
+    우선방향 = []
+    for k, _ in 회피_악화:
+        nd = RISK_TO_NEED.get(k)
+        if nd and nd not in 우선방향:
+            우선방향.append(nd)
+
     return OrderedDict([
         ("quadrant", q),
         ("quadrant_민감낙인", [STG_NAME.get(c, c) for c in SENS.get(q, [])]),
         ("quadrant_취약의존", [DEP_NAME.get(c, c) for c in VULN.get(q, [])]),
         ("회피점수", pr.get("avoidance")), ("의존점수", pr.get("dependency")),
-        ("회피_주동인", topk(회피)), ("의존_주동인", topk(의존)),
+        ("회피_주동인", topk(회피)), ("의존_주동인", topk(의존)),  # 하위호환(대시보드 소비)
+        ("회피_악화요인", [f"{k} (+{v})" for k, v in 회피_악화]),
+        ("회피_완충요인", [f"{k} ({v})" for k, v in 회피_완충]),
         ("고위험_행정동", 위험동),
+        ("우선처방방향", 우선방향),
     ])
 
 
@@ -248,6 +301,11 @@ def build_payload(cur, gu, EV, q_override=None):
         raise ValueError(f"'{gu}'의 quadrant를 SHADOW_PROFILE에서 못 찾음. 자치구명을 확인하세요.")
 
     progs = gu_programs(cur, gu)
+
+    # ★ 전이예측 프로파일 먼저 — '우선처방방향'(지금 악화 중인 회피요인이 요구하는 need)을
+    #   진단·이식후보 우선순위에 흘려보내기 위해 여기서 계산한다.
+    rp_profile = region_profile(profile, gu, q, SENS, VULN, STG_NAME, DEP_NAME)
+    active_needs = set(rp_profile.get("우선처방방향", []))
 
     # ① 현행 (coverage_rule: 연령·성별·당사자 통과)
     현행 = [OrderedDict([("program_id", p["program_id"]), ("name", p["name"]),
@@ -291,8 +349,11 @@ def build_payload(cur, gu, EV, q_override=None):
             ("원인_제도", b["원인_제도"][:8]),
             ("원인_제도_총수", len(b["원인_제도"])),
             ("need", OrderedDict([("id", need["need_id"]), ("name", need["name"]), ("def", need["def"])])),
+            ("우선처방", need["need_id"] in active_needs),  # ★ 전이예측상 지금 악화 중인 방향
             ("근거_논문", evidence_for(EV, trigger, need["need_id"])),
         ]))
+    # 모든 한계는 유지하되, 지금 악화 중인 방향(우선처방=True)을 앞으로 — 강조 순서만 조정(안정 정렬)
+    진단.sort(key=lambda d: 0 if d["우선처방"] else 1)
 
     # ④ 이식후보 (★ ADB 그래프 추론)
     need_ids = []
@@ -324,11 +385,11 @@ def build_payload(cur, gu, EV, q_override=None):
         for tier in ("해외", "국내타지역", "서울타자치구"):
             mixed.extend(by[tier][:3])
         mixed.sort(key=lambda c: order.get(c["reference_priority"], 9))
-        이식후보.append(OrderedDict([("need_id", nid), ("candidates", mixed)]))
+        이식후보.append(OrderedDict([("need_id", nid), ("우선처방", nid in active_needs), ("candidates", mixed)]))
 
     return OrderedDict([
         ("선택_자치구", gu), ("대상", "서울 5060 남성 1인가구"),
-        ("지역_프로파일", region_profile(profile, gu, q, SENS, VULN, STG_NAME, DEP_NAME)),
+        ("지역_프로파일", rp_profile),
         ("현행_제도", 현행), ("진단", 진단), ("이식후보", 이식후보),
         ("_note", "ADB 그래프(shadow_graph) 규칙으로 계산됨. LLM은 재판단 말고 ①~⑤ 서술만. 입력에 없는 제도·논문 인용 금지."),
     ])
@@ -433,15 +494,18 @@ def main():
     payload = r["사실"]
 
     rp = payload["지역_프로파일"]
-    print(f"  Q={rp['quadrant']} | 회피주동인={rp.get('회피_주동인')} | 고위험동={[d['행정동'] for d in rp.get('고위험_행정동', [])]}")
+    print(f"  Q={rp['quadrant']} | 회피_악화요인={rp.get('회피_악화요인')} | 우선처방방향={rp.get('우선처방방향')}")
+    print(f"  고위험동={[(d['행정동'], d.get('전이확률'), d.get('주요악화요인')) for d in rp.get('고위험_행정동', [])]}")
     print(f"  ① 현행 제도: {len(payload['현행_제도'])}건")
     for d in payload["진단"]:
-        print(f"  ② {d['한계']}: 원인 {d['원인_제도_총수']}건 → ③ {d['need']['name']}({d['need']['id']}) · 근거논문 {len(d['근거_논문'])}편")
+        star = "★" if d.get("우선처방") else " "
+        print(f"  {star}② {d['한계']}: 원인 {d['원인_제도_총수']}건 → ③ {d['need']['name']}({d['need']['id']}) · 근거논문 {len(d['근거_논문'])}편")
     for t in payload["이식후보"]:
         pr = {}
         for c in t["candidates"]:
             pr[c["reference_priority"]] = pr.get(c["reference_priority"], 0) + 1
-        print(f"  ④ {t['need_id']} 이식후보: {len(t['candidates'])}건 {pr}")
+        star = "★" if t.get("우선처방") else " "
+        print(f"  {star}④ {t['need_id']} 이식후보: {len(t['candidates'])}건 {pr}")
 
     # 입력 저장 (베이스라인/디버깅용)
     in_path = os.path.join(HERE, f"처방입력_{gu}.json")
