@@ -1,0 +1,11 @@
+# SHADOW-AI 시연용 슬림 의존성 (1GB 무료 VM = E2.1.Micro 대비)
+# 런타임에 실제 쓰는 것만. shap/sklearn/scipy/matplotlib 제외(분석 파이프라인 전용, 대시보드는 안 씀)
+streamlit==1.45.1
+pandas==2.2.3
+numpy==2.1.3
+plotly==5.24.1
+
+# 처방 엔진 — ADB 그래프 + OpenAI 생성
+oracledb==4.0.1
+openai==2.41.0
+python-dotenv==1.2.2
