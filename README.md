@@ -18,7 +18,7 @@
 6. [SHADOW RAG — 처방 (뉴로-심볼릭)](#6-shadow-rag--처방-뉴로-심볼릭)
 7. [데이터 파이프라인 — shadow_profile.json](#7-데이터-파이프라인--shadow_profilejson)
 8. [폴더 구조](#8-폴더-구조)
-9. [실행 방법](#9-실행-방법)
+9. [실행 & 배포 (로컬 · OCI 클라우드)](#9-실행-방법)
 10. [한계와 향후 방향](#10-한계와-향후-방향)
 11. [데이터 공개 기준](#11-데이터-공개-기준)
 
@@ -77,6 +77,8 @@
 | **SHADOW RAG** | 처방 (지역 맞춤) | 자치구/행정동 | — | 한계 진단 → 이식 처방 |
 
 세 기둥의 결과는 **하나의 통합 인풋 `Data/shadow_profile.json`** 으로 묶인다 ([§7](#7-데이터-파이프라인--shadow_profilejson)).
+
+> **클라우드 구성:** 처방 지식그래프 `shadow_graph` 는 **OCI Autonomous Database(ADB)** 에 구축되어 있고, 대시보드(Streamlit)는 **OCI Compute 가상머신**에 배포되어 공개 접속된다 — 진단·예측·처방이 하나의 오라클 클라우드 안에서 동작한다 ([§9 배포](#9-실행-방법)).
 
 ---
 
@@ -181,12 +183,12 @@ Gradient Boosting (주) + Logistic Regression (기준선). N≈419로 작아 `ma
 - **검색(결정적):** 전문가가 설계한 복지 온톨로지(지식그래프)를 1~2홉 탐색해 **한계를 논리적으로 도출**. 두 축으로 모델링 —
   - 복지회피축: `제도 →자극→ 낙인요소 ∩ Q →민감→ 낙인요소 = 낙인 충돌`
   - 편의의존축: `제도 →심화→ 의존요소 ∩ Q →취약→ 의존요소 = 의존 충돌`
-- **생성(LLM):** Claude가 검색된 근거 **안에서만** 처방을 작성 (제공 근거 밖 생성 금지 + 출력 스키마 강제 → 출처 필수).
+- **생성(LLM):** LLM이 검색된 근거 **안에서만** 처방을 작성 (제공 근거 밖 생성 금지 + 출력 스키마 강제 → 출처 필수).
 - **벡터/임베딩 미사용** — 지식이 작고 구조적이라 그래프가 더 정확·설명가능. (해외사례가 대량으로 늘면 사례 검색에만 임베딩 추가 검토)
 
 → 한 줄: **"전문가 온톨로지로 한계를 결정적으로 진단하고, LLM이 외부 검증모델을 이식 처방으로 생성하는 무환각·설명가능 뉴로-심볼릭 시스템."**
 
-> 현재 상태: `prescription/` 에서 본 구현 예정. `kb/`(graph·prescriptions·cases)는 대시보드에 연결된 데모 버전(목업)으로, 새 시스템의 출발점.
+> **현재 상태 (구현됨):** 처방 엔진 `shadow_rag_llm.py` 가 **OCI Autonomous Database(ADB)의 지식그래프 `shadow_graph`** 를 직접 쿼리해 사실을 결정적으로 추출하고, LLM이 그 근거로 처방문(①~⑤)을 생성한다. 담당자 질의응답 챗봇(`shadow_chat.py`)·그래프 시각화(`rag_graph.py`)도 대시보드에 연결됨. `kb/`(graph·prescriptions·cases)는 대시보드 데모용 그래프 모듈, `prescription/`은 본 구현 확장 자리.
 
 ---
 
@@ -224,6 +226,11 @@ Oracle-Shadow-AI-seoul/
 ├─ shadow_service.py        # 대시보드 진입 (멀티페이지)
 ├─ shadow_dashboard.py      # 전이예측 페이지 (원본)
 ├─ shadow_common.py         # 공통 로더
+├─ theme.py                 # 공통 디자인 테마
+├─ shadow_rag_llm.py        # ③ 처방 엔진 (ADB 그래프 쿼리 + LLM 생성)
+├─ shadow_chat.py           # ③ 담당자 질의응답 챗봇
+├─ rag_graph.py             # ③ 처방 지식그래프 시각화
+├─ load_evidence_to_adb.py  # ③ 근거 데이터 → ADB 적재
 ├─ README.md · requirements.txt
 │
 ├─ code/                    # ① 분석: 지수·전이예측 산출
@@ -239,9 +246,13 @@ Oracle-Shadow-AI-seoul/
 │   ├─ seoul_dong.geojson · seoul_dong_code.csv
 │
 ├─ pipeline/                # ② 데이터 통합 (build·merge·verify)
-├─ prescription/            # ③ 처방 시스템 (Graph RAG, 구현 예정)
+├─ prescription/            # ③ 처방 시스템 (Graph RAG 본구현 확장 자리)
 ├─ kb/ · views/ · .streamlit/   # ④ 대시보드 부품
+│
+├─ deploy/                  # ⑤ OCI 클라우드 배포 (vm_setup.sh·가이드)  ← §9
+└─ scratch/                 # 로컬 테스트 스크립트 (test_db·test_openai 등)
 ```
+> 비밀파일(`wallet/`·`.env`·`Wallet_*.zip`)은 `.gitignore`로 저장소에서 제외 — ADB 접속 자격증명.
 
 ---
 
@@ -259,6 +270,23 @@ python code/build_dependency_index.py    # 편의의존 지수
 python code/build_avoidance_index.py     # 복지회피 지수
 python pipeline/build_gu_profile.py && python pipeline/merge_profile.py  # 통합 인풋
 ```
+
+### 클라우드 배포 (OCI) — 공개 시연
+
+대시보드를 **OCI Compute 가상머신(VM)** 에 배포해, 내 노트북 없이도 누구나 접속할 수 있는 공개 웹서비스로 운영한다. (지식그래프는 OCI ADB, 앱은 OCI VM — 한 클라우드 안에서 연동)
+
+```
+[로컬]  코드+데이터+wallet  ──scp──▶  [OCI VM: Ubuntu]  streamlit run  ──▶  [OCI ADB: shadow_graph]
+```
+
+핵심 절차 (전체 가이드: **`deploy/README.md`**):
+1. OCI Compute 인스턴스 생성 (Ubuntu, public subnet, 공인 IP)
+2. OCI Security List에서 포트 `8501` 개방
+3. `scp` 로 배포 묶음 전송 → `ssh` 접속
+4. `bash deploy/vm_setup.sh` (파이썬·패키지·방화벽 자동 세팅)
+5. 백그라운드 실행: `nohup streamlit run shadow_service.py --server.port 8501 --server.address 0.0.0.0 --server.headless true &`
+
+> AWS EC2 배포와 동일한 IaaS 패턴. `wallet/`·`.env` 만 VM에 두면 ADB 처방 기능이 그대로 동작한다.
 
 ---
 
