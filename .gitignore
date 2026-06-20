@@ -41,3 +41,7 @@ wallet/
 # 처방 생성물 (돌릴 때마다 생김, 커밋 불필요)
 처방입력_*.json
 처방문_*.md
+
+# 웹페이지 저장 부산물 (Graph Studio 화면 저장, 코드 아님)
+Data/Prescription/shadow_graph_1_files/
+**/*.다운로드
